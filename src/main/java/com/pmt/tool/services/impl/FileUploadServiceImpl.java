@@ -1,12 +1,12 @@
 package com.pmt.tool.services.impl;
 
+import com.pmt.tool.component.FileUploadConverter;
 import com.pmt.tool.dto.FileUploadDto;
 import com.pmt.tool.entity.DetailType;
 import com.pmt.tool.entity.FileUpload;
 import com.pmt.tool.repositories.DetailTypeRepository;
 import com.pmt.tool.repositories.FileUploadRepository;
 import com.pmt.tool.services.FileUploadService;
-import component.FileUploadConverter;
 import lombok.AllArgsConstructor;
 import org.apache.commons.io.FilenameUtils;
 import org.jetbrains.annotations.NotNull;

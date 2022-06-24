@@ -1,4 +1,4 @@
-package component;
+package com.pmt.tool.component;
 
 import com.pmt.tool.dto.UserDto;
 import com.pmt.tool.entity.User;
