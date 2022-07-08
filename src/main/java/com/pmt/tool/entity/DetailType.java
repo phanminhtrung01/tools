@@ -3,7 +3,6 @@ package com.pmt.tool.entity;
 import lombok.*;
 
 import javax.persistence.*;
-import java.util.Date;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -14,16 +13,15 @@ import java.util.Date;
 @Table(name = "detail_type")
 public class DetailType {
     @Id
-    @Column(name = "id_detail")
-    private Long idDetail;
-    private String code;
-    private Date dateCreated;
-    private Date dateModified;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_detail_type")
+    private Long idDetailType;
+    @Column(nullable = false)
+    private String nameDetailType;
+    private String description;
 
     @OneToOne
-    @JoinColumn(name = "id_type")
-    @EqualsAndHashCode.Exclude
-    @ToString.Exclude
-    private FileUpload fileUpload;
+    @JoinColumn(name = "id_software", nullable = false)
+    private SoftwareType softwareType;
 
 }

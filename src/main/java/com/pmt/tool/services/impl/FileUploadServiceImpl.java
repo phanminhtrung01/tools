@@ -2,8 +2,7 @@ package com.pmt.tool.services.impl;
 
 import com.pmt.tool.component.FileUploadConverter;
 import com.pmt.tool.dto.FileUploadDto;
-import com.pmt.tool.entity.DetailType;
-import com.pmt.tool.entity.FileUpload;
+import com.pmt.tool.entity.Files;
 import com.pmt.tool.repositories.DetailTypeRepository;
 import com.pmt.tool.repositories.FileUploadRepository;
 import com.pmt.tool.services.FileUploadService;
@@ -26,20 +25,18 @@ public class FileUploadServiceImpl implements FileUploadService {
 
     @Override
     public Optional<FileUploadDto> addFile(@NotNull FileUploadDto fileUploadDto) {
-        Optional<FileUpload> fileUpload = fileUploadRepository.findById(fileUploadDto.getIdFile());
+        Optional<Files> fileUpload = fileUploadRepository.findById(fileUploadDto.getIdFile());
 
         if (fileUpload.isPresent()) {
             return Optional.empty();
         }
-
         fileUploadRepository.save(fileUploadConverter.dtoToEntity(fileUploadDto));
-
         return Optional.of(fileUploadDto);
     }
 
     @Override
     public Optional<FileUploadDto> removeFile(@NotNull FileUploadDto fileUploadDto) {
-        Optional<FileUpload> fileUpload = fileUploadRepository.findById(fileUploadDto.getIdFile());
+        Optional<Files> fileUpload = fileUploadRepository.findById(fileUploadDto.getIdFile());
 
         return Optional.of((fileUpload.map(file -> {
             fileUploadRepository.delete(file);
@@ -50,7 +47,7 @@ public class FileUploadServiceImpl implements FileUploadService {
 
     @Override
     public Optional<FileUploadDto> updateFile(@NotNull FileUploadDto fileUploadDto, Long id) {
-        Optional<FileUpload> fileUpload = fileUploadRepository.findById(fileUploadDto.getIdFile());
+        Optional<Files> fileUpload = fileUploadRepository.findById(fileUploadDto.getIdFile());
 
         return Optional.of((fileUpload.map(file -> {
 
@@ -59,9 +56,6 @@ public class FileUploadServiceImpl implements FileUploadService {
             file.setNameFile(fileUploadDto.getNameFile());
             file.setPathFile(fileUploadDto.getPathFile());
             file.setTypeFile(fileUploadDto.getTypeFile());
-            DetailType detailType = detailTypeRepository
-                    .findById(fileUploadDto.getDetailTypeIdDetail()).orElse(new DetailType());
-            file.setDetailType(detailType);
 
             fileUploadRepository.save(file);
 
@@ -74,7 +68,8 @@ public class FileUploadServiceImpl implements FileUploadService {
         String fileExtension = FilenameUtils.getExtension(file.getOriginalFilename());
 
         assert fileExtension != null;
-        return Arrays.asList(new String[]{"docx", "xlsx", "doc", "xlx"}).contains(fileExtension.trim().toLowerCase());
+        return Arrays.asList(new String[]{"docx", "xlsx", "doc", "xlx"})
+                .contains(fileExtension.trim().toLowerCase());
     }
 
     public Optional<FileUploadDto> storeFile(MultipartFile file) {
@@ -89,7 +84,9 @@ public class FileUploadServiceImpl implements FileUploadService {
                 throw new RuntimeException("Failed to store empty file!");
             }
 
-            FileUpload fileUpload = new FileUpload(
+            //TODO-UPDATE------------------------------->Transient
+            Files files = new Files();
+            /*Files files = new Files(
                     null,
                     file.getBytes(),
                     file.getContentType(),
@@ -97,9 +94,9 @@ public class FileUploadServiceImpl implements FileUploadService {
                     file.getOriginalFilename(),
                     "",
                     null
-            );
+            );*/
 
-            return Optional.ofNullable(fileUploadConverter.entityToDto(fileUpload));
+            return Optional.ofNullable(fileUploadConverter.entityToDto(files));
 
         } catch (Exception e) {
             throw new RuntimeException("Failed to store empty file!");

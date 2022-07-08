@@ -10,8 +10,11 @@ import java.io.Serializable;
 @AllArgsConstructor
 @Data
 public class FileUploadDto implements Serializable {
+
+    //TODO-UPDATE------------------------------->Transient
+
     private Long idFile;
-    private byte[] data;
+    private Byte[] data;
     private String typeFile;
     private Double sizeFile;
     private String pathFile;
