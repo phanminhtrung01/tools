@@ -24,7 +24,6 @@ public class UserController {
 
     @GetMapping("")
     List<UserDto> getAllUser() {
-
         List<User> users = userRepository.findAll();
         return userConverter.entityToDto(users);
     }
@@ -52,7 +51,6 @@ public class UserController {
                         ""
                 )
         ));
-
     }
 
     @ResponseBody
