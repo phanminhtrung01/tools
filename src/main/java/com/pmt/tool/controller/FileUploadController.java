@@ -1,6 +1,6 @@
+/*
 package com.pmt.tool.controller;
 
-import com.pmt.tool.dto.FileUploadDto;
 import com.pmt.tool.entity.ResponseObject;
 import com.pmt.tool.services.impl.FileUploadServiceImpl;
 import lombok.AllArgsConstructor;
@@ -22,13 +22,15 @@ public class FileUploadController {
 
     private FileUploadServiceImpl fileUploadService;
 
-    /*@GetMapping("")
+    */
+/*@GetMapping("")
     public List<FileUploadDto> findAll() {
 
         List<FileUpload> file
 
         return fileUploadConverter.entityToDto(fileUploads);
-    }*/
+    }*//*
+
 
     @PostMapping("upload")
     public ResponseEntity<ResponseObject> uploadFile(
@@ -56,3 +58,4 @@ public class FileUploadController {
     }
 
 }
+*/

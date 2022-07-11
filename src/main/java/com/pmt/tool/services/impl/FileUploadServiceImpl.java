@@ -1,7 +1,6 @@
+/*
 package com.pmt.tool.services.impl;
 
-import com.pmt.tool.component.FileUploadConverter;
-import com.pmt.tool.dto.FileUploadDto;
 import com.pmt.tool.entity.Files;
 import com.pmt.tool.repositories.DetailTypeRepository;
 import com.pmt.tool.repositories.FileUploadRepository;
@@ -21,7 +20,7 @@ public class FileUploadServiceImpl implements FileUploadService {
 
     private DetailTypeRepository detailTypeRepository;
     private FileUploadRepository fileUploadRepository;
-    private FileUploadConverter fileUploadConverter;
+    private FilesConverter filesConverter;
 
     @Override
     public Optional<FileUploadDto> addFile(@NotNull FileUploadDto fileUploadDto) {
@@ -30,7 +29,7 @@ public class FileUploadServiceImpl implements FileUploadService {
         if (fileUpload.isPresent()) {
             return Optional.empty();
         }
-        fileUploadRepository.save(fileUploadConverter.dtoToEntity(fileUploadDto));
+        fileUploadRepository.save(filesConverter.dtoToEntity(fileUploadDto));
         return Optional.of(fileUploadDto);
     }
 
@@ -39,8 +38,9 @@ public class FileUploadServiceImpl implements FileUploadService {
         Optional<Files> fileUpload = fileUploadRepository.findById(fileUploadDto.getIdFile());
 
         return Optional.of((fileUpload.map(file -> {
+            file.toString();
             fileUploadRepository.delete(file);
-            return fileUploadConverter.entityToDto(file);
+            return filesConverter.entityToDto(file);
         }).orElse(new FileUploadDto())));
 
     }
@@ -59,7 +59,7 @@ public class FileUploadServiceImpl implements FileUploadService {
 
             fileUploadRepository.save(file);
 
-            return fileUploadConverter.entityToDto(file);
+            return filesConverter.entityToDto(file);
         }).orElse(fileUploadDto)));
 
     }
@@ -86,7 +86,8 @@ public class FileUploadServiceImpl implements FileUploadService {
 
             //TODO-UPDATE------------------------------->Transient
             Files files = new Files();
-            /*Files files = new Files(
+            */
+/*Files files = new Files(
                     null,
                     file.getBytes(),
                     file.getContentType(),
@@ -94,9 +95,10 @@ public class FileUploadServiceImpl implements FileUploadService {
                     file.getOriginalFilename(),
                     "",
                     null
-            );*/
+            );*//*
 
-            return Optional.ofNullable(fileUploadConverter.entityToDto(files));
+
+            return Optional.ofNullable(filesConverter.entityToDto(files));
 
         } catch (Exception e) {
             throw new RuntimeException("Failed to store empty file!");
@@ -104,11 +106,14 @@ public class FileUploadServiceImpl implements FileUploadService {
 
     }
 
-    /*public byte[] readFileContent(String fileName) {
+    */
+/*public byte[] readFileContent(String fileName) {
         try {
             Path file = st
         } catch (Exception e) {
 
         }
-    }*/
+    }*//*
+
 }
+*/

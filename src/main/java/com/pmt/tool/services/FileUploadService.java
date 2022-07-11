@@ -1,6 +1,6 @@
+/*
 package com.pmt.tool.services;
 
-import com.pmt.tool.dto.FileUploadDto;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -17,3 +17,4 @@ public interface FileUploadService {
     Optional<FileUploadDto> storeFile(MultipartFile file);
 
 }
+*/
