@@ -1,12 +1,9 @@
 package com.pmt.tool.controller;
 
-import com.pmt.tool.component.Converter;
 import com.pmt.tool.dto.UserDto;
 import com.pmt.tool.entity.ResponseObject;
-import com.pmt.tool.entity.User;
-import com.pmt.tool.repositories.UserRepository;
-import lombok.AllArgsConstructor;
-import org.jetbrains.annotations.NotNull;
+import com.pmt.tool.services.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,13 +11,16 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
 
-@AllArgsConstructor
 @RestController
 @RequestMapping(path = "/api/pmt/users/")
 public class UserController {
 
-    private final UserRepository userRepository;
-    private Converter<User, UserDto> userConverter;
+    private final UserService userService;
+
+    @Autowired
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
 
     @GetMapping("home")
     public String greeting() {
@@ -29,26 +29,25 @@ public class UserController {
 
     @GetMapping("")
     List<UserDto> getAllUser() {
-        List<User> users = userRepository.findAll();
-        return userConverter.entityToDto(users, UserDto.class);
+        return userService.getAllUser();
     }
 
     @ResponseBody
     @GetMapping("find/{id}")
     ResponseEntity<ResponseObject> findById(@PathVariable Long id) {
-        Optional<User> foundUser = userRepository.findById(id);
+        Optional<UserDto> foundUser = userService.findById(id);
 
         return foundUser.map(user -> ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(
                         200,
                         "Query user successfully",
-                        userConverter.entityToDto(user, UserDto.class)
+                        user
                 )
         )).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(
                 new ResponseObject(
                         404,
                         "Cannot find user with idUser: " + id,
-                        ""
+                        foundUser//Optional.empty()
                 )
         ));
     }
@@ -56,37 +55,36 @@ public class UserController {
     @ResponseBody
     @GetMapping("find/{lastName}")
     ResponseEntity<ResponseObject> findUserByLastName(@PathVariable("lastName") String lastName) {
-        List<User> foundUser = userRepository.findByLastNameContaining(lastName);
+        List<UserDto> foundUsers = userService.findUserByLastName(lastName);
 
-        return foundUser.size() > 0 ?
-                ResponseEntity.status(HttpStatus.OK).body(
-                        new ResponseObject(
-                                200,
-                                "Query user successfully",
-                                userConverter.entityToDto(foundUser, UserDto.class)
-                        )
-                ) :
-                ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                        new ResponseObject(
-                                500,
-                                "Cannot find user with lastName: " + lastName,
-                                ""
-                        )
-                );
+        return foundUsers.size() > 0
+                ? ResponseEntity.status(HttpStatus.OK).body(
+                new ResponseObject(
+                        200,
+                        "Query user successfully",
+                        foundUsers
+                )
+        )
+                : ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                new ResponseObject(
+                        500,
+                        "Cannot find user with lastName: " + lastName,
+                        foundUsers//Optional.empty()
+                )
+        );
     }
 
     @PostMapping("insert")
-    ResponseEntity<ResponseObject> insertUser(@RequestBody @NotNull UserDto userDto) {
+    ResponseEntity<ResponseObject> insertUser(@RequestBody UserDto userDto) {
 
-        //TODO: check foundUser.Size --> error :.trim()
-        List<User> foundUser = userRepository.findByUserName(userConverter.dtoToEntity(userDto, User.class).getUserName().trim());
+        Optional<UserDto> foundUser = userService.insertUser(userDto);
 
-        if (foundUser.size() > 0) {
+        if (foundUser.isPresent()) {
             return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(
                     new ResponseObject(
                             501,
                             "Email of user already taken",
-                            ""
+                            foundUser //Optional.empty()
                     )
             );
         }
@@ -95,50 +93,39 @@ public class UserController {
                 new ResponseObject(
                         200,
                         "Insert user successfully",
-                        userConverter.entityToDto(
-                                userRepository.save(userConverter.dtoToEntity(userDto, User.class)),
-                                UserDto.class
-                        )
+                        foundUser
                 )
         );
     }
 
-    @PutMapping("{id}")
-    ResponseEntity<ResponseObject> updateUser(@RequestBody UserDto userDto, @PathVariable Long id) {
-        Optional<User> updateUser = userRepository.findById(id);
+    @PutMapping("update")
+    ResponseEntity<ResponseObject> updateUser(@RequestBody UserDto userDto) {
+        Optional<UserDto> updateUser = userService.updateUser(userDto);
+
         if (updateUser.isPresent()) {
-
-            updateUser.map(user1 -> {
-                user1.setFirstName(userConverter.dtoToEntity(userDto, User.class).getFirstName());
-                user1.setLastName(userConverter.dtoToEntity(userDto, User.class).getLastName());
-                user1.setUserName(userConverter.dtoToEntity(userDto, User.class).getUserName());
-
-                return userRepository.save(user1);
-            });
             return ResponseEntity.status(HttpStatus.OK).body(
                     new ResponseObject(
                             201,
                             "Update user successfully",
-                            userConverter.entityToDto(updateUser.get(), UserDto.class)
+                            updateUser
                     )
             );
         } else {
-            userConverter.dtoToEntity(userDto, User.class).setIdUser(id);
             return insertUser(userDto);
         }
     }
 
-    @DeleteMapping("delete/{id}")
-    ResponseEntity<ResponseObject> deleteUser(@PathVariable Long id) {
-        boolean exists = userRepository.existsById(id);
+    @DeleteMapping("delete/{userName}")
+    ResponseEntity<ResponseObject> deleteUser(@PathVariable String userName) {
 
-        if (exists) {
-            userRepository.deleteById(id);
+        Optional<UserDto> deleteUser = userService.deleteUser(userName);
+
+        if (deleteUser.isPresent()) {
             return ResponseEntity.status(HttpStatus.OK).body(
                     new ResponseObject(
                             200,
                             "Delete user successfully",
-                            ""
+                            deleteUser
                     )
             );
 
@@ -147,7 +134,7 @@ public class UserController {
                 new ResponseObject(
                         404,
                         "Cannot not User to delete",
-                        ""
+                        deleteUser
                 )
         );
     }
