@@ -12,7 +12,6 @@ import javax.persistence.*;
 @Entity
 @Table(name = "file")
 public class Files {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_file")
