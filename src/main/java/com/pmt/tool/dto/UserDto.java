@@ -1,15 +1,16 @@
 package com.pmt.tool.dto;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 
 @Data
-
+@NoArgsConstructor
 public class UserDto implements Serializable {
-    private final String userName;
-    private final String password;
-    private final String firstName;
-    private final String lastName;
-    private final Boolean gender;
+    private String userName;
+    private String password;
+    private String firstName;
+    private String lastName;
+    private Boolean gender;
 }

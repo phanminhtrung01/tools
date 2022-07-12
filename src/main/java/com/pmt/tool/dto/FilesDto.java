@@ -6,8 +6,8 @@ import java.io.Serializable;
 
 @Data
 public class FilesDto implements Serializable {
-    private final Byte[] data;
-    private final String nameFile;
-    private final Double sizeFile;
-    private final StatusFileDto statusFile;
+    private Byte[] data;
+    private String nameFile;
+    private Double sizeFile;
+    private StatusFileDto statusFile;
 }

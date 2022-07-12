@@ -6,5 +6,5 @@ import java.io.Serializable;
 
 @Data
 public class StatusFileDto implements Serializable {
-    private final Long idStatusFile;
+    private Long idStatusFile;
 }
