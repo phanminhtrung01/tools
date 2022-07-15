@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping(path = "/api/pmt/users/")
+@RequestMapping(path = "/api/pmt/user/")
 public class UserController {
 
     private final UserService userService;
@@ -21,33 +21,28 @@ public class UserController {
     public UserController(UserService userService) {
         this.userService = userService;
     }
-
-    @GetMapping("home")
-    public String greeting() {
-        return "index";
-    }
-
+    
     @GetMapping("")
     List<UserDto> getAllUser() {
         return userService.getAllUser();
     }
 
     @ResponseBody
-    @GetMapping("find/{id}")
-    ResponseEntity<ResponseObject> findById(@PathVariable Long id) {
+    @GetMapping("find")
+    ResponseEntity<ResponseObject> findById(@RequestParam Long id) {
         Optional<UserDto> foundUser = userService.findById(id);
 
         return foundUser.map(user -> ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(
-                        200,
+                        HttpStatus.OK.value(),
                         "Query user successfully",
                         user
                 )
         )).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(
                 new ResponseObject(
-                        404,
+                        HttpStatus.NO_CONTENT.value(),
                         "Cannot find user with idUser: " + id,
-                        foundUser//Optional.empty()
+                        foundUser
                 )
         ));
     }
@@ -61,13 +56,13 @@ public class UserController {
                 ? ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(
                         200,
-                        "Query user successfully",
+                        "Query user successfully!",
                         foundUsers
                 )
         )
                 : ResponseEntity.status(HttpStatus.NOT_FOUND).body(
                 new ResponseObject(
-                        500,
+                        HttpStatus.NO_CONTENT.value(),
                         "Cannot find user with lastName: " + lastName,
                         foundUsers//Optional.empty()
                 )
@@ -80,18 +75,18 @@ public class UserController {
         Optional<UserDto> foundUser = userService.insertUser(userDto);
 
         if (foundUser.isPresent()) {
-            return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(
+            return ResponseEntity.status(HttpStatus.ALREADY_REPORTED).body(
                     new ResponseObject(
-                            501,
+                            HttpStatus.ALREADY_REPORTED.value(),
                             "Email of user already taken",
-                            foundUser //Optional.empty()
+                            Optional.empty()
                     )
             );
         }
 
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(
-                        200,
+                        HttpStatus.OK.value(),
                         "Insert user successfully",
                         foundUser
                 )
@@ -105,7 +100,7 @@ public class UserController {
         if (updateUser.isPresent()) {
             return ResponseEntity.status(HttpStatus.OK).body(
                     new ResponseObject(
-                            201,
+                            HttpStatus.OK.value(),
                             "Update user successfully",
                             updateUser
                     )
@@ -123,7 +118,7 @@ public class UserController {
         if (deleteUser.isPresent()) {
             return ResponseEntity.status(HttpStatus.OK).body(
                     new ResponseObject(
-                            200,
+                            HttpStatus.OK.value(),
                             "Delete user successfully",
                             deleteUser
                     )
@@ -132,7 +127,7 @@ public class UserController {
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
                 new ResponseObject(
-                        404,
+                        HttpStatus.NO_CONTENT.value(),
                         "Cannot not User to delete",
                         deleteUser
                 )

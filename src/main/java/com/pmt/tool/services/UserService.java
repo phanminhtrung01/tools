@@ -18,7 +18,9 @@ public class UserService {
     private final Converter<User, UserDto> userConverter;
 
     @Autowired
-    public UserService(UserRepository userRepository, Converter<User, UserDto> userConverter) {
+    public UserService(
+            UserRepository userRepository,
+            Converter<User, UserDto> userConverter) {
         this.userRepository = userRepository;
         this.userConverter = userConverter;
     }
@@ -32,9 +34,7 @@ public class UserService {
     public Optional<UserDto> findById(Long id) {
         Optional<User> foundUser = userRepository.findById(id);
 
-        return foundUser.map(
-                user -> userConverter.entityToDto(user, UserDto.class)
-        );
+        return userConverter.entityToDto(foundUser, UserDto.class);
     }
 
     public List<UserDto> findUserByLastName(String lastName) {
@@ -54,7 +54,7 @@ public class UserService {
             foundUser.ifPresent(userRepository::save);
         }
 
-        return foundUser.map(user -> userConverter.entityToDto(user, UserDto.class));
+        return userConverter.entityToDto(foundUser, UserDto.class);
     }
 
     public Optional<UserDto> updateUser(@NotNull UserDto userDto) {
@@ -75,7 +75,7 @@ public class UserService {
             return user;
         });
 
-        return foundUser.map(user -> userConverter.entityToDto(user, UserDto.class));
+        return userConverter.entityToDto(foundUser, UserDto.class);
 
     }
 

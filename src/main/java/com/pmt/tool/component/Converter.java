@@ -7,6 +7,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component
@@ -16,8 +17,6 @@ public class Converter<T, S> {
 
     private final T entity = null;
     private final S dto = null;
-    private List<T> entityList;
-    private List<S> dtoList;
 
     ModelMapper modelMapper = new ModelMapper();
 
@@ -28,14 +27,16 @@ public class Converter<T, S> {
     }
 
     public List<S> entityToDto(@NotNull List<T> entityList, Class<S> dtoClass) {
-        List<S> sList = entityList
+
+        return entityList
                 .stream()
                 .map(entity -> modelMapper.map(entity, dtoClass))
                 .collect(Collectors.toList());
+    }
 
-        setDtoList(sList);
+    public Optional<S> entityToDto(@NotNull Optional<T> entityOptional, Class<S> dtoClass) {
 
-        return getDtoList();
+        return entityOptional.map(entity -> modelMapper.map(entity, dtoClass));
     }
 
     public T dtoToEntity(S dto, Class<T> entityClass) {
@@ -44,7 +45,7 @@ public class Converter<T, S> {
         return getEntity();
     }
 
-    public List<T> dtoToEntity(@NotNull List<S> dtoList, Class<T> entityClass) {
+    /*public List<T> dtoToEntity(@NotNull List<S> dtoList, Class<T> entityClass) {
         List<T> tList = dtoList
                 .stream()
                 .map(dto -> modelMapper.map(dto, entityClass))
@@ -53,6 +54,6 @@ public class Converter<T, S> {
         setEntityList(tList);
 
         return getEntityList();
-    }
+    }*/
 
 }
