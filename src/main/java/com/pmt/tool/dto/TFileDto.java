@@ -5,9 +5,10 @@ import lombok.Data;
 import java.io.Serializable;
 
 @Data
-public class FilesDto implements Serializable {
-    private Byte[] data;
+public class TFileDto implements Serializable {
+    private String idFile;
     private String nameFile;
+    private String pathFile;
     private Double sizeFile;
-    private StatusFileDto statusFile;
+    private String typeFile;
 }

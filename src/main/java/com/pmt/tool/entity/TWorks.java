@@ -14,7 +14,7 @@ import java.util.Set;
 @ToString
 @Entity
 @Table(name = "works")
-public class Works {
+public class TWorks {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_works", nullable = false)
@@ -26,17 +26,14 @@ public class Works {
 
     @OneToOne
     @JoinColumn(name = "id_type_work", nullable = false)
-    private TypeWork typeWork;
+    private TTypeWork typeWork;
 
     @OneToOne
     @JoinColumn(name = "id_file", nullable = false)
-    private Files files;
+    private TFile files;
 
     @OneToMany(mappedBy = "works", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
-    private Set<DetailWork> detailType = new HashSet<>();
-
-    /*@ManyToMany(cascade = CascadeType.ALL)
-    private Set<User> user = new HashSet<>();*/
+    private Set<TDetailWork> detailType = new HashSet<>();
 
 }

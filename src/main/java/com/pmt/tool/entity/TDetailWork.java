@@ -12,7 +12,7 @@ import java.io.Serializable;
 @ToString
 @Entity
 @Table(name = "detail_work")
-public class DetailWork implements Serializable {
+public class TDetailWork implements Serializable {
 
     @Id
     @Column(name = "id_user")
@@ -24,14 +24,14 @@ public class DetailWork implements Serializable {
 
     @OneToOne
     @JoinColumn(name = "id_detail_type", nullable = false)
-    private DetailType detailType;
+    private TDetailType detailType;
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "id_user", nullable = false)
-    private User user;
+    private TUser user;
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "id_work", nullable = false)
-    private Works works;
+    private TWorks works;
 
 }

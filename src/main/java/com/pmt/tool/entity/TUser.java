@@ -15,7 +15,7 @@ import java.util.Set;
 @ToString
 @Entity
 @Table(name = "users")
-public class User {
+public class TUser {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,19 +34,10 @@ public class User {
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "user", orphanRemoval = true)
     @ToString.Exclude
-    private List<HandleType> handleTypeSet = new ArrayList<>();
+    private List<THandleType> handleTypeSet = new ArrayList<>();
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "user", orphanRemoval = true)
     @ToString.Exclude
-    private Set<DetailWork> detailWorkSet = new HashSet<>();
-
-    /*@ManyToMany(cascade = CascadeType.ALL, mappedBy = "user")
-    @JoinTable(
-            name = "detail_work",
-            joinColumns = {@JoinColumn(name = "id_user")},
-            inverseJoinColumns = {@JoinColumn(name = "id_work")}
-    )
-    @ToString.Exclude
-    private Set<Works> worksSet = new HashSet<>();*/
+    private Set<TDetailWork> detailWorkSet = new HashSet<>();
 
 }

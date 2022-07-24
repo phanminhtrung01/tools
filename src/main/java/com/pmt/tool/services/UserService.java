@@ -1,8 +1,8 @@
 package com.pmt.tool.services;
 
 import com.pmt.tool.component.Converter;
-import com.pmt.tool.dto.UserDto;
-import com.pmt.tool.entity.User;
+import com.pmt.tool.dto.TUserDto;
+import com.pmt.tool.entity.TUser;
 import com.pmt.tool.repositories.UserRepository;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,59 +15,59 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository userRepository;
-    private final Converter<User, UserDto> userConverter;
+    private final Converter<TUser, TUserDto> userConverter;
 
     @Autowired
     public UserService(
             UserRepository userRepository,
-            Converter<User, UserDto> userConverter) {
+            Converter<TUser, TUserDto> userConverter) {
         this.userRepository = userRepository;
         this.userConverter = userConverter;
     }
 
-    public List<UserDto> getAllUser() {
-        List<User> users = userRepository.findAll();
+    public List<TUserDto> getAllUser() {
+        List<TUser> users = userRepository.findAll();
 
-        return userConverter.entityToDto(users, UserDto.class);
+        return userConverter.entityToDto(users, TUserDto.class);
     }
 
-    public Optional<UserDto> findById(Long id) {
-        Optional<User> foundUser = userRepository.findById(id);
+    public Optional<TUserDto> findById(Long id) {
+        Optional<TUser> foundUser = userRepository.findById(id);
 
-        return userConverter.entityToDto(foundUser, UserDto.class);
+        return userConverter.entityToDto(foundUser, TUserDto.class);
     }
 
-    public List<UserDto> findUserByLastName(String lastName) {
-        List<User> users = userRepository.findByLastNameContaining(lastName);
+    public List<TUserDto> findUserByLastName(String lastName) {
+        List<TUser> users = userRepository.findByLastNameContaining(lastName);
 
-        return userConverter.entityToDto(users, UserDto.class);
+        return userConverter.entityToDto(users, TUserDto.class);
     }
 
-    public Optional<UserDto> insertUser(@NotNull UserDto userDto) {
-        Optional<User> foundUser = Optional.empty();
+    public Optional<TUserDto> insertUser(@NotNull TUserDto userDto) {
+        Optional<TUser> foundUser = Optional.empty();
 
         if (!userDto.getUserName().trim().isEmpty()) {
             foundUser = userRepository.findByUserName(userDto.getUserName());
         }
 
-        if (foundUser.isPresent()) {
+        if (foundUser.isEmpty()) {
             foundUser.ifPresent(userRepository::save);
         }
 
-        return userConverter.entityToDto(foundUser, UserDto.class);
+        return userConverter.entityToDto(foundUser, TUserDto.class);
     }
 
-    public Optional<UserDto> updateUser(@NotNull UserDto userDto) {
-        Optional<User> foundUser = userRepository.findByUserName(userDto.getUserName());
+    public Optional<TUserDto> updateUser(@NotNull TUserDto userDto) {
+        Optional<TUser> foundUser = userRepository.findByUserName(userDto.getUserName());
         if (foundUser.isPresent()) {
-            return foundUser.map(user -> userConverter.entityToDto(user, UserDto.class));
+            return foundUser.map(user -> userConverter.entityToDto(user, TUserDto.class));
         } else {
             return insertUser(userDto);
         }
     }
 
-    public Optional<UserDto> deleteUser(String userName) {
-        Optional<User> foundUser = userRepository.findByUserName(userName);
+    public Optional<TUserDto> deleteUser(String userName) {
+        Optional<TUser> foundUser = userRepository.findByUserName(userName);
 
         foundUser.map(user -> {
             userRepository.delete(foundUser.get());
@@ -75,7 +75,7 @@ public class UserService {
             return user;
         });
 
-        return userConverter.entityToDto(foundUser, UserDto.class);
+        return userConverter.entityToDto(foundUser, TUserDto.class);
 
     }
 

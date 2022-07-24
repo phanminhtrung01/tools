@@ -1,6 +1,7 @@
 package com.pmt.tool.entity;
 
 import lombok.*;
+import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 
@@ -11,23 +12,23 @@ import javax.persistence.*;
 @ToString
 @Entity
 @Table(name = "file")
-public class Files {
+public class TFile {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(generator = "uuid")
+    @GenericGenerator(name = "uuid", strategy = "uuid2")
     @Column(name = "id_file")
-    private Long idFile;
+    private String idFile;
+    @Lob
     @Column(nullable = false, columnDefinition = "mediumblob")
-    private Byte[] data;
+    private byte[] data;
     @Column(nullable = false)
     private String nameFile;
     @Column(nullable = false)
-    private String pathFile;
-    @Column(nullable = false, columnDefinition = "double default 0.0")
-    private Double sizeFile;
+    private Long sizeFile;
     @Column(nullable = false)
     private String typeFile;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "id_status", nullable = false)
-    private StatusFile statusFile;
+    private TStatusFile statusFile;
 }

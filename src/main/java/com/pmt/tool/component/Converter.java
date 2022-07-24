@@ -15,15 +15,11 @@ import java.util.stream.Collectors;
 @Setter
 public class Converter<T, S> {
 
-    private final T entity = null;
-    private final S dto = null;
-
     ModelMapper modelMapper = new ModelMapper();
 
     public S entityToDto(T entity, Class<S> dtoClass) {
-        modelMapper.map(entity, dtoClass);
 
-        return getDto();
+        return modelMapper.map(entity, dtoClass);
     }
 
     public List<S> entityToDto(@NotNull List<T> entityList, Class<S> dtoClass) {
@@ -40,9 +36,8 @@ public class Converter<T, S> {
     }
 
     public T dtoToEntity(S dto, Class<T> entityClass) {
-        modelMapper.map(dto, entityClass);
-
-        return getEntity();
+        
+        return modelMapper.map(dto, entityClass);
     }
 
     /*public List<T> dtoToEntity(@NotNull List<S> dtoList, Class<T> entityClass) {

@@ -11,7 +11,7 @@ import javax.persistence.*;
 @ToString
 @Entity
 @Table(name = "handle_type")
-public class HandleType {
+public class THandleType {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_handle", nullable = false)
@@ -22,10 +22,10 @@ public class HandleType {
 
     @OneToOne
     @JoinColumn(name = "id_detail_type", nullable = false)
-    private DetailType idDetailType;
+    private TDetailType idDetailType;
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "creator_id", nullable = false)
-    private User user;
+    private TUser user;
 
 }

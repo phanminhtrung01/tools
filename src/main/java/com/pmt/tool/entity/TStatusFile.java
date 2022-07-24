@@ -12,7 +12,7 @@ import java.util.Date;
 @ToString
 @Entity
 @Table(name = "status_file")
-public class StatusFile {
+public class TStatusFile {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_status_file", nullable = false)

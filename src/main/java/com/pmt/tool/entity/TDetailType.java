@@ -11,7 +11,7 @@ import javax.persistence.*;
 @ToString
 @Entity
 @Table(name = "detail_type")
-public class DetailType {
+public class TDetailType {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_detail_type")
@@ -22,6 +22,6 @@ public class DetailType {
 
     @OneToOne
     @JoinColumn(name = "id_software", nullable = false)
-    private SoftwareType softwareType;
+    private TSoftwareType softwareType;
 
 }

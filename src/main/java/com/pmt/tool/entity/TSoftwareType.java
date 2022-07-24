@@ -10,13 +10,12 @@ import javax.persistence.*;
 @Setter
 @ToString
 @Entity
-@Table(name = "type_work")
-public class TypeWork {
+@Table(name = "software_type")
+public class TSoftwareType {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
-    private Long id;
+    @Column(name = "id_software")
+    private Long idSoftware;
     @Column(nullable = false)
-    private String nameTypeWork;
-
+    private String nameSoftware;
 }

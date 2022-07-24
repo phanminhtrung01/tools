@@ -1,6 +1,6 @@
 package com.pmt.tool.controller;
 
-import com.pmt.tool.dto.UserDto;
+import com.pmt.tool.dto.TUserDto;
 import com.pmt.tool.entity.ResponseObject;
 import com.pmt.tool.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,16 +21,16 @@ public class UserController {
     public UserController(UserService userService) {
         this.userService = userService;
     }
-    
-    @GetMapping("")
-    List<UserDto> getAllUser() {
+
+    @GetMapping("all")
+    List<TUserDto> getAllUser() {
         return userService.getAllUser();
     }
 
     @ResponseBody
-    @GetMapping("find")
+    @GetMapping("/find")
     ResponseEntity<ResponseObject> findById(@RequestParam Long id) {
-        Optional<UserDto> foundUser = userService.findById(id);
+        Optional<TUserDto> foundUser = userService.findById(id);
 
         return foundUser.map(user -> ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(
@@ -50,7 +50,7 @@ public class UserController {
     @ResponseBody
     @GetMapping("find/{lastName}")
     ResponseEntity<ResponseObject> findUserByLastName(@PathVariable("lastName") String lastName) {
-        List<UserDto> foundUsers = userService.findUserByLastName(lastName);
+        List<TUserDto> foundUsers = userService.findUserByLastName(lastName);
 
         return foundUsers.size() > 0
                 ? ResponseEntity.status(HttpStatus.OK).body(
@@ -70,9 +70,9 @@ public class UserController {
     }
 
     @PostMapping("insert")
-    ResponseEntity<ResponseObject> insertUser(@RequestBody UserDto userDto) {
+    ResponseEntity<ResponseObject> insertUser(@RequestBody TUserDto userDto) {
 
-        Optional<UserDto> foundUser = userService.insertUser(userDto);
+        Optional<TUserDto> foundUser = userService.insertUser(userDto);
 
         if (foundUser.isPresent()) {
             return ResponseEntity.status(HttpStatus.ALREADY_REPORTED).body(
@@ -94,8 +94,8 @@ public class UserController {
     }
 
     @PutMapping("update")
-    ResponseEntity<ResponseObject> updateUser(@RequestBody UserDto userDto) {
-        Optional<UserDto> updateUser = userService.updateUser(userDto);
+    ResponseEntity<ResponseObject> updateUser(@RequestBody TUserDto userDto) {
+        Optional<TUserDto> updateUser = userService.updateUser(userDto);
 
         if (updateUser.isPresent()) {
             return ResponseEntity.status(HttpStatus.OK).body(
@@ -113,7 +113,7 @@ public class UserController {
     @DeleteMapping("delete/{userName}")
     ResponseEntity<ResponseObject> deleteUser(@PathVariable String userName) {
 
-        Optional<UserDto> deleteUser = userService.deleteUser(userName);
+        Optional<TUserDto> deleteUser = userService.deleteUser(userName);
 
         if (deleteUser.isPresent()) {
             return ResponseEntity.status(HttpStatus.OK).body(
