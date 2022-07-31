@@ -1,7 +1,5 @@
 package com.pmt.tool.services;
 
-import com.aspose.words.Document;
-import com.aspose.words.ImportFormatMode;
 import com.pmt.tool.component.Converter;
 import com.pmt.tool.dto.TFileDto;
 import com.pmt.tool.entity.TFile;
@@ -31,8 +29,7 @@ public class FileService {
     private final FileRepository fileRepository;
     private final StatusFileRepository statusFileRepository;
     private final Converter<TFile, TFileDto> fileConverter;
-
-    private final Path root = Paths.get("uploads");
+    private final Path root = Paths.get("src", "main", "resources");
 
     @Autowired
     public FileService(
@@ -42,46 +39,42 @@ public class FileService {
         this.fileRepository = fileRepository;
         this.statusFileRepository = statusFileRepository;
         this.fileConverter = fileConverter;
+    }
 
+    public Path createDirectory(String type) {
         try {
-            Files.createDirectory(root);
+            return Files.createDirectory(root.resolve(type));
         } catch (IOException ignored) {
+            return root.resolve(type);
         }
     }
 
     public File storedFile(
-            MultipartFile @NotNull [] file,
-            @NotNull HttpServletRequest request) throws Exception {
-
-        Document output = new Document();
-        // Remove all content from the destination document before appending.
-        output.removeAllChildren();
+            @NotNull MultipartFile[] file,
+            @NotNull HttpServletRequest request) throws IOException {
 
         Arrays.stream(file).forEach(file1 -> {
             String fileName = StringUtils
                     .cleanPath(Objects.requireNonNull(file1.getOriginalFilename()));
-
             String fileExtension = FilenameUtils.getExtension(file1.getOriginalFilename());
+            Path pathResource = createDirectory(fileExtension);
             String generatedFileName = Long.toHexString(
                     DateFormat.getDateTimeInstance().getCalendar().getTimeInMillis()
                             + Double.doubleToLongBits(Math.random())) + "." + fileExtension;
-
             Path destinationFilePath = this.root
                     .resolve(Paths.get(generatedFileName))
                     .normalize()
                     .toAbsolutePath();
+
             if (!destinationFilePath.getParent().equals(this.root.toAbsolutePath())) {
-                throw new RuntimeException("");
+                throw new RuntimeException();
             }
 
-            Document input;
             try (InputStream inputStream = file1.getInputStream()) {
                 Files.copy(
                         inputStream,
                         destinationFilePath,
                         StandardCopyOption.REPLACE_EXISTING);
-
-                input = new Document(destinationFilePath.toString());
 
                 Files.delete(destinationFilePath);
             } catch (Exception e) {
@@ -89,7 +82,6 @@ public class FileService {
             }
 
             TFile fileFound = new TFile();
-
             fileFound.setNameFile(fileName);
             try {
                 fileFound.setData(file1.getBytes());
@@ -107,11 +99,8 @@ public class FileService {
             statusFileRepository.save(statusFile);
 
             fileFound.setStatusFile(statusFile);
-
             fileRepository.save(fileFound);
 
-            // Append the source document to the end of the destination document.
-            output.appendDocument(input, ImportFormatMode.KEEP_SOURCE_FORMATTING);
         });
 
         String fileOutput = "output.pdf";
@@ -119,7 +108,6 @@ public class FileService {
                 .resolve(Paths.get(fileOutput))
                 .normalize()
                 .toAbsolutePath();
-        output.save(destinationFileOutput.toString());
 
         return new File(destinationFileOutput.toUri());
     }
@@ -138,5 +126,6 @@ public class FileService {
 
         return fileConverter.entityToDto(files, TFileDto.class);
     }
+
 
 }

@@ -14,8 +14,13 @@ import javax.persistence.*;
 public class TSoftwareType {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_software")
-    private Long idSoftware;
-    @Column(nullable = false)
-    private String nameSoftware;
+    @Column(name = "id_type")
+    private Long idType;
+    private String extensionType;
+    private String description;
+
+    @ManyToOne(cascade = CascadeType.MERGE)
+    @JoinColumn(name = "id_software", nullable = false)
+    private TSoftware software;
+
 }

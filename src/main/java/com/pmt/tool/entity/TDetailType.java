@@ -22,6 +22,6 @@ public class TDetailType {
 
     @OneToOne
     @JoinColumn(name = "id_software", nullable = false)
-    private TSoftwareType softwareType;
+    private TSoftware softwareType;
 
 }
