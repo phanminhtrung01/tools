@@ -21,7 +21,9 @@ public class TSoftware {
     @Column(nullable = false)
     private String nameSoftware;
 
-    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, mappedBy = "software", orphanRemoval = true)
+    @OneToMany(
+            cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
+            mappedBy = "software", orphanRemoval = true)
     @ToString.Exclude
     private List<TSoftwareType> softwareTypes = new ArrayList<>();
 

@@ -43,7 +43,6 @@ public class UserService {
         return userConverter.entityToDto(users, TUserDto.class);
     }
 
-    //TODO: update insert_user----logic?
     public Optional<TUserDto> insertUser(@NotNull TUserDto userDto) {
         Optional<TUser> foundUser = Optional.empty();
 
@@ -52,7 +51,7 @@ public class UserService {
         }
 
         if (foundUser.isEmpty()) {
-            foundUser.ifPresent(userRepository::save);
+            userRepository.save(userConverter.dtoToEntity(userDto, TUser.class));
         }
 
         return userConverter.entityToDto(foundUser, TUserDto.class);

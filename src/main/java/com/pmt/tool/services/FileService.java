@@ -1,6 +1,7 @@
 package com.pmt.tool.services;
 
 import com.pmt.tool.component.Converter;
+import com.pmt.tool.component.MyRunner;
 import com.pmt.tool.dto.TFileDto;
 import com.pmt.tool.entity.TFile;
 import com.pmt.tool.entity.TStatusFile;
@@ -14,7 +15,6 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -23,13 +23,14 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.text.DateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class FileService {
+    private static final Path ROOT = MyRunner.resourceDirectory;
     private final FileRepository fileRepository;
     private final StatusFileRepository statusFileRepository;
     private final Converter<TFile, TFileDto> fileConverter;
-    private final Path root = Paths.get("src", "main", "resources");
 
     @Autowired
     public FileService(
@@ -43,30 +44,37 @@ public class FileService {
 
     public Path createDirectory(String type) {
         try {
-            return Files.createDirectory(root.resolve(type));
+            return Files.createDirectory(ROOT.resolve(type));
         } catch (IOException ignored) {
-            return root.resolve(type);
+            return ROOT.resolve(type);
         }
     }
 
-    public File storedFile(
+    public List<Path> storedFile(
             @NotNull MultipartFile[] file,
-            @NotNull HttpServletRequest request) throws IOException {
+            @NotNull HttpServletRequest request) {
 
-        Arrays.stream(file).forEach(file1 -> {
+        return Arrays.stream(file).map(file1 -> {
             String fileName = StringUtils
                     .cleanPath(Objects.requireNonNull(file1.getOriginalFilename()));
             String fileExtension = FilenameUtils.getExtension(file1.getOriginalFilename());
-            Path pathResource = createDirectory(fileExtension);
-            String generatedFileName = Long.toHexString(
-                    DateFormat.getDateTimeInstance().getCalendar().getTimeInMillis()
-                            + Double.doubleToLongBits(Math.random())) + "." + fileExtension;
-            Path destinationFilePath = this.root
-                    .resolve(Paths.get(generatedFileName))
-                    .normalize()
-                    .toAbsolutePath();
+            Path path = createDirectory(fileExtension);
+            String randomUUID = UUID.randomUUID().toString();
+            String suffixUUID = randomUUID.split("-", 4)[3];
+            double generatedTime = DateFormat
+                    .getDateTimeInstance()
+                    .getCalendar()
+                    .getTimeInMillis() / 1000000000D;
+            String replaceSuffixUUID = Long.toHexString(Double.doubleToLongBits(generatedTime));
+            String prefixFileName = randomUUID.replaceAll(suffixUUID, replaceSuffixUUID);
+            String generatedFileName = prefixFileName + "." + fileExtension;
+            generatedFileName = generatedFileName.replaceAll("-", "");
+            Path destinationFilePath = path
+                    .resolve(generatedFileName);
 
-            if (!destinationFilePath.getParent().equals(this.root.toAbsolutePath())) {
+            if (!destinationFilePath
+                    .getParent()
+                    .equals(ROOT.resolve(Paths.get(fileExtension)))) {
                 throw new RuntimeException();
             }
 
@@ -75,8 +83,6 @@ public class FileService {
                         inputStream,
                         destinationFilePath,
                         StandardCopyOption.REPLACE_EXISTING);
-
-                Files.delete(destinationFilePath);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -101,15 +107,9 @@ public class FileService {
             fileFound.setStatusFile(statusFile);
             fileRepository.save(fileFound);
 
-        });
+            return destinationFilePath;
+        }).collect(Collectors.toList());
 
-        String fileOutput = "output.pdf";
-        Path destinationFileOutput = this.root
-                .resolve(Paths.get(fileOutput))
-                .normalize()
-                .toAbsolutePath();
-
-        return new File(destinationFileOutput.toUri());
     }
 
     public Optional<TFileDto> getFile(String id) {
