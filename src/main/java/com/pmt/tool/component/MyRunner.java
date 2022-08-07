@@ -18,6 +18,8 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -25,15 +27,11 @@ import java.util.Objects;
 
 @Component
 public class MyRunner implements CommandLineRunner {
-
-    //TODO: Already Software -> ERROR: microsoft.com.vn
+    public static final Path resourceDirectory = Paths.get("src", "main", "resources", "static");
     private static final Logger LOGGER = LoggerFactory.getLogger(MyRunner.class);
-
     private static final String URL_SEARCH = "https://en.wikipedia.org";
-
     private final SoftwareTypeRepository softwareTypeRepository;
     private final SoftwareRepository softwareRepository;
-
     private final TypeWorkRepository typeWorkRepository;
 
     @Autowired
@@ -141,8 +139,8 @@ public class MyRunner implements CommandLineRunner {
     @Override
     public void run(String... args) throws IOException {
 
-        insertSoftware();
-        insertSoftwareType();
-        insertTypeWork(List.of());
+        //insertSoftware();
+        //insertSoftwareType();
+        //insertTypeWork(List.of());
     }
 }

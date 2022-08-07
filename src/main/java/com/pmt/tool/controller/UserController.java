@@ -88,7 +88,7 @@ public class UserController {
                 new ResponseObject(
                         HttpStatus.OK.value(),
                         "Insert user successfully",
-                        foundUser
+                        userDto
                 )
         );
     }

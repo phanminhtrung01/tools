@@ -11,7 +11,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.File;
+import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,13 +33,24 @@ public class FileController {
             HttpServletRequest request) {
         try {
 
-            File fileOutput = fileService.storedFile(file, request);
-
-            return ResponseEntity.status(HttpStatus.OK)
+            List<Path> pathList = fileService.storedFile(file, request);
+            final int[] i = {0};
+            return ResponseEntity
+                    .status(HttpStatus.OK)
                     .body(new ResponseObject(
                             HttpStatus.OK.value(),
                             "Upload file succeed!",
-                            fileOutput
+
+                            Arrays.stream(file).map((file_) -> {
+                                TFileDto fileDto = new TFileDto();
+                                fileDto.setNameFile(file_.getOriginalFilename());
+                                fileDto.setSizeFile((double) file_.getSize());
+                                fileDto.setTypeFile(file_.getContentType());
+                                fileDto.setPathFile(pathList.get(i[0]));
+                                i[0]++;
+
+                                return fileDto;
+                            })
                     ));
         } catch (Exception e) {
 
