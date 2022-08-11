@@ -1,7 +1,7 @@
 package com.pmt.tool.controller;
 
+import com.pmt.tool.component.ResponseObject;
 import com.pmt.tool.dto.TFileDto;
-import com.pmt.tool.entity.ResponseObject;
 import com.pmt.tool.services.FileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -30,11 +30,15 @@ public class FileController {
     @PostMapping("upload")
     public ResponseEntity<ResponseObject> uploadFile(
             @RequestPart("file") MultipartFile[] file,
+            //@RequestBody TSoftwareDto softwareDto,
             HttpServletRequest request) {
+
         try {
 
-            List<Path> pathList = fileService.storedFile(file, request);
+            List<Path> pathList = fileService
+                    .storedFile(file, "Microsoft Excel", request);
             final int[] i = {0};
+
             return ResponseEntity
                     .status(HttpStatus.OK)
                     .body(new ResponseObject(
@@ -58,7 +62,9 @@ public class FileController {
                     .body(new ResponseObject(
                             HttpStatus.EXPECTATION_FAILED.value(),
                             "Could not upload the file: "
-                                    + file[0].getOriginalFilename() + "!\n" + e,
+                                    + file[0].getOriginalFilename()
+                                    + "! "
+                                    + e.getMessage(),
                             null
                     ));
         }

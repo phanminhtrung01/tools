@@ -1,7 +1,7 @@
 package com.pmt.tool.controller;
 
+import com.pmt.tool.component.ResponseObject;
 import com.pmt.tool.dto.TUserDto;
-import com.pmt.tool.entity.ResponseObject;
 import com.pmt.tool.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,6 +15,7 @@ import java.util.Optional;
 @RequestMapping(path = "/api/pmt/user/")
 public class UserController {
 
+    //FIXME: Converter TUser -> TUserDto
     private final UserService userService;
 
     @Autowired

@@ -1,7 +1,7 @@
 package com.pmt.tool.controller;
 
+import com.pmt.tool.component.ResponseObject;
 import com.pmt.tool.dto.TStatusFileDto;
-import com.pmt.tool.entity.ResponseObject;
 import com.pmt.tool.services.StatusFileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
