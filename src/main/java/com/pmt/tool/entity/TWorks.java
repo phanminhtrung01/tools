@@ -3,6 +3,7 @@ package com.pmt.tool.entity;
 import lombok.*;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -14,7 +15,7 @@ import java.util.Set;
 @ToString
 @Entity
 @Table(name = "works")
-public class TWorks {
+public class TWorks implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_works", nullable = false)
@@ -32,8 +33,8 @@ public class TWorks {
     @JoinColumn(name = "id_file", nullable = false)
     private TFile files;
 
-    @OneToMany(mappedBy = "works", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ManyToMany(cascade = CascadeType.ALL, mappedBy = "works")
     @ToString.Exclude
-    private Set<TDetailWork> detailType = new HashSet<>();
+    private Set<TUser> users = new HashSet<>();
 
 }

@@ -1,7 +1,7 @@
 package com.pmt.tool.controller;
 
+import com.pmt.tool.component.ResponseObject;
 import com.pmt.tool.dto.TFileDto;
-import com.pmt.tool.entity.ResponseObject;
 import com.pmt.tool.services.FileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -16,7 +16,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-/*@CrossOrigin("http://localhost:8080")*/
+/*@CrossOrigin("http://localhost:8085")*/
 @RestController
 @RequestMapping("/api/pmt/file/")
 public class FileController {
@@ -30,21 +30,24 @@ public class FileController {
     @PostMapping("upload")
     public ResponseEntity<ResponseObject> uploadFile(
             @RequestPart("file") MultipartFile[] file,
+            //@RequestBody TSoftwareDto softwareDto,
             HttpServletRequest request) {
+
         try {
 
-            List<Path> pathList = fileService.storedFile(file, request);
+            List<Path> pathList = fileService
+                    .storedFile(file, "Microsoft Excel", request);
             final int[] i = {0};
+
             return ResponseEntity
                     .status(HttpStatus.OK)
                     .body(new ResponseObject(
                             HttpStatus.OK.value(),
                             "Upload file succeed!",
-
                             Arrays.stream(file).map((file_) -> {
                                 TFileDto fileDto = new TFileDto();
                                 fileDto.setNameFile(file_.getOriginalFilename());
-                                fileDto.setSizeFile((double) file_.getSize());
+                                fileDto.setSizeFile(file_.getSize());
                                 fileDto.setTypeFile(file_.getContentType());
                                 fileDto.setPathFile(pathList.get(i[0]));
                                 i[0]++;
@@ -58,7 +61,9 @@ public class FileController {
                     .body(new ResponseObject(
                             HttpStatus.EXPECTATION_FAILED.value(),
                             "Could not upload the file: "
-                                    + file[0].getOriginalFilename() + "!\n" + e,
+                                    + file[0].getOriginalFilename()
+                                    + "! "
+                                    + e.getMessage(),
                             null
                     ));
         }

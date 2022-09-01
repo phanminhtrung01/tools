@@ -9,6 +9,7 @@
           <option value="javax.*" />
           <option value="org.springframework.*" />
           <option value="lombok.AllArgsConstructor" />
+          <option value="lombok.Data" />
         </list>
       </option>
     </inspection_tool>

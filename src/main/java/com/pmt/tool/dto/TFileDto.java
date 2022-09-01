@@ -8,7 +8,7 @@ import java.nio.file.Path;
 @Data
 public class TFileDto implements Serializable {
     private String nameFile;
-    private Double sizeFile;
+    private Long sizeFile;
     private String typeFile;
     private Path pathFile;
 }
