@@ -3,6 +3,7 @@ package com.pmt.tool.entity;
 import lombok.*;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -15,7 +16,7 @@ import java.util.Set;
 @ToString
 @Entity
 @Table(name = "users")
-public class TUser {
+public class TUser implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,8 +37,16 @@ public class TUser {
     @ToString.Exclude
     private List<THandleType> handleTypeSet = new ArrayList<>();
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user", orphanRemoval = true)
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(
+            name = "detail_work",
+            joinColumns = {@JoinColumn(name = "id_user")},
+            inverseJoinColumns = {@JoinColumn(name = "id_work")}
+    )
     @ToString.Exclude
-    private Set<TDetailWork> detailWorkSet = new HashSet<>();
+    private Set<TWorks> works = new HashSet<>();
 
+    @ManyToMany(cascade = CascadeType.MERGE)
+    @ToString.Exclude
+    private List<TRole> roles = new ArrayList<>();
 }

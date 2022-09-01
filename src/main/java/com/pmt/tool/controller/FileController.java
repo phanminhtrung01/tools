@@ -16,7 +16,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-/*@CrossOrigin("http://localhost:8080")*/
+/*@CrossOrigin("http://localhost:8085")*/
 @RestController
 @RequestMapping("/api/pmt/file/")
 public class FileController {
@@ -44,11 +44,10 @@ public class FileController {
                     .body(new ResponseObject(
                             HttpStatus.OK.value(),
                             "Upload file succeed!",
-
                             Arrays.stream(file).map((file_) -> {
                                 TFileDto fileDto = new TFileDto();
                                 fileDto.setNameFile(file_.getOriginalFilename());
-                                fileDto.setSizeFile((double) file_.getSize());
+                                fileDto.setSizeFile(file_.getSize());
                                 fileDto.setTypeFile(file_.getContentType());
                                 fileDto.setPathFile(pathList.get(i[0]));
                                 i[0]++;

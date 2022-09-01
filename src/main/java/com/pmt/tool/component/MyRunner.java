@@ -1,12 +1,9 @@
 package com.pmt.tool.component;
 
-import com.pmt.tool.entity.TSoftware;
-import com.pmt.tool.entity.TSoftwareType;
-import com.pmt.tool.entity.TTypeWork;
+import com.pmt.tool.entity.*;
 import com.pmt.tool.enums.SearchType;
-import com.pmt.tool.repositories.SoftwareRepository;
-import com.pmt.tool.repositories.SoftwareTypeRepository;
-import com.pmt.tool.repositories.TypeWorkRepository;
+import com.pmt.tool.repositories.*;
+import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -14,11 +11,12 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -27,6 +25,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Component
+@RequiredArgsConstructor
 public class MyRunner implements CommandLineRunner {
 
     public static final Path resourceDirectory = Paths
@@ -37,16 +36,8 @@ public class MyRunner implements CommandLineRunner {
     private final SoftwareTypeRepository softwareTypeRepository;
     private final SoftwareRepository softwareRepository;
     private final TypeWorkRepository typeWorkRepository;
-
-    @Autowired
-    public MyRunner(
-            SoftwareTypeRepository softwareTypeRepository,
-            SoftwareRepository softwareRepository,
-            TypeWorkRepository typeWorkRepository) {
-        this.softwareTypeRepository = softwareTypeRepository;
-        this.softwareRepository = softwareRepository;
-        this.typeWorkRepository = typeWorkRepository;
-    }
+    private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
 
     //PS: Search result on website: https://www.file-extensions.org
     public static @NotNull List<TSoftwareType> searchSoftwareType(
@@ -60,7 +51,15 @@ public class MyRunner implements CommandLineRunner {
 
         if (keySearch.equals(SearchType.ALL)) {
             searchString = "/search/extensions/search/" + extensionType;
-            documentSearch = Jsoup.connect(URL_SEARCH1 + searchString).get();
+            try {
+                documentSearch = Jsoup.connect(URL_SEARCH1 + searchString).get();
+            } catch (Exception e) {
+                Proxy proxyWeb = new Proxy(
+                        Proxy.Type.HTTP,
+                        new InetSocketAddress("192.168.43.1", 10809));
+                documentSearch = Jsoup.connect(URL_SEARCH1 + searchString).proxy(proxyWeb).get();
+            }
+
             Element elementPage = documentSearch
                     .getElementsByClass("pagenumber").first();
 
@@ -103,7 +102,7 @@ public class MyRunner implements CommandLineRunner {
                     itemsContainExtension = itemsContainExtension.nextElementSibling();
                     continue;
                 }
-                
+
                 if (extensionContain.text().equals(extensionType)) {
                     TSoftwareType softwareType = new TSoftwareType();
                     Element extensionDes = itemExtension.last();
@@ -272,13 +271,59 @@ public class MyRunner implements CommandLineRunner {
         });
     }
 
+    private void roleUser() {
+        roleRepository.saveAll(Arrays.asList(
+                new TRole(null, "USER"),
+                new TRole(null, "MANAGER"),
+                new TRole(null, "ADMIN"),
+                new TRole(null, "SUPER_ADMIN")
+        ));
+    }
+
+    private void insertUserDemo() {
+        userRepository.saveAll(Arrays.asList(
+                new TUser(null, "pmt111@gmail.com", "1234",
+                        "Phan", "Thu",
+                        false, null, null,
+                        List.of(new TRole(1L, "USER"))
+                ),
+                new TUser(null, "ht121@gmail.com", "1111",
+                        "Hong", "Thanh",
+                        true,
+                        null, null,
+                        Arrays.asList(
+                                new TRole(1L, "USER"),
+                                new TRole(2L, "MANAGER")
+                        )
+                ),
+                new TUser(null, "thaophuong@gmail.com", "4321",
+                        "Phuong", "Thao",
+                        false, null, null,
+                        Arrays.asList(
+                                new TRole(3L, "ADMIN"),
+                                new TRole(4L, "SUPER_ADMIN")
+                        )
+                ),
+                new TUser(null, "tu2012@gmail.com", "4444",
+                        "Tu", "Nam",
+                        true, null, null,
+                        Arrays.asList(
+                                new TRole(1L, "USER"),
+                                new TRole(2L, "MANAGER"),
+                                new TRole(3L, "ADMIN")
+                        )
+                )
+        ));
+    }
+
     @Override
     public void run(String... args) throws IOException {
 
         /*insertSoftware1();*/
         /*insertSoftwareType1();*/
         /*insertTypeWork(List.of());*/
-        searchSoftwareType("exe", SearchType.ALL);
-
+        /*searchSoftwareType("exe", SearchType.ALL);*/
+        roleUser();
+        insertUserDemo();
     }
 }
